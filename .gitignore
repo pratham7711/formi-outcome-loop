@@ -5,3 +5,4 @@ __pycache__/
 state/
 runs_*.log
 .pytest_cache/
+logs/

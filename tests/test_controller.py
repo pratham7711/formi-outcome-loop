@@ -108,6 +108,16 @@ def test_window_requires_decision_before_ttl(hhmm, ok):
     assert governance.window_ok(_Ctx(2 * 1440 + h * 60 + m), pol)[0] is ok
 
 
+@pytest.mark.parametrize("hhmm,urgent,ok", [("17:00", False, False), ("17:00", True, True),
+                                             ("18:30", True, False), ("19:30", True, False)])
+def test_urgent_fix_accepts_small_expiry_risk(hhmm, urgent, ok):
+    # Kestrel-like policy: 11:00-19:00, latency 20-120 min, TTL 12h. At 17:00 only a 120-minute
+    # latency misses 19:00 (P(in time)=0.99); routine still waits for certainty, an incident fix goes.
+    h, m = map(int, hhmm.split(":"))
+    pol = {"lo": 11, "hi": 19, "lat": [20, 120], "ttl_h": 12}
+    assert governance.window_ok(_Ctx(2 * 1440 + h * 60 + m), pol, urgent)[0] is ok
+
+
 # ---------------------------------------------------------------- ingest idempotency
 def _ev(i, **kw):
     base = {"type": "call", "ts": "2027-01-05T10:05:00+05:30", "workflow_id": "w", "campaign_id": "w:c1",

@@ -4,10 +4,10 @@
 
 | workflow | conclusion rate | Δ | pickup | Δ | engagement | Δ | engagement gap captured | hallucinated calls (base) |
 |---|---|---|---|---|---|---|---|---|
-| ks_cancel | 0.361 | +53.2% | 0.254 | +40.1% | 0.486 | +3.8% | 30% | 132 (348) |
-| nw_kyc | 0.441 | +17.9% | 0.279 | +19.1% | 0.595 | -2.2% | 0% | 24 (29) |
-| nw_renewal | 0.488 | +12.8% | 0.291 | +10.9% | 0.559 | +0.8% | 5% | 57 (54) |
-| ALL | 0.420 | +27.1% | 0.271 | +23.7% | 0.534 | +0.4% | 19% | 213 (431) |
+| ks_cancel | 0.367 | +55.7% | 0.252 | +39.0% | 0.496 | +6.2% | 32% | 94 (348) |
+| nw_kyc | 0.440 | +17.9% | 0.278 | +18.4% | 0.598 | -1.7% | 0% | 27 (29) |
+| nw_renewal | 0.483 | +11.5% | 0.294 | +12.3% | 0.546 | -1.5% | 5% | 60 (54) |
+| ALL | 0.421 | +27.3% | 0.272 | +23.7% | 0.535 | +0.5% | 20% | 181 (431) |
 
 ## Changes applied by the controller
 
@@ -28,8 +28,8 @@
 - ks_cancel v8 (controller_auto) dims=['caller_id'] engageΔ=+0.000 didΔ=+0.112 → **beneficial**
 - nw_kyc v3 (controller_approved) dims=['caller_id'] engageΔ=+0.000 didΔ=+0.281 → **beneficial**
 - nw_renewal v7 (controller_approved) dims=['voice'] engageΔ=+0.015 didΔ=+0.000 → **beneficial**
-- nw_kyc v4 (controller_approved) dims=['caller_id'] engageΔ=+0.000 didΔ=+0.000 → **neutral**
 - ks_cancel v10 (controller_approved) dims=['prompt_version'] engageΔ=+0.102 didΔ=+0.000 → **beneficial**
+- nw_kyc v4 (controller_approved) dims=['caller_id'] engageΔ=+0.000 didΔ=+0.000 → **neutral**
 - ks_cancel v11 (controller_auto) dims=['welcome_message', 'voice'] engageΔ=-0.007 didΔ=+0.000 → **neutral**
 - ks_cancel v12 (controller_auto) dims=['welcome_message', 'voice'] engageΔ=-0.004 didΔ=+0.000 → **neutral**
 - nw_kyc v5 (controller_approved) dims=['caller_id'] engageΔ=+0.000 didΔ=+0.140 → **beneficial**
@@ -78,14 +78,14 @@
       "6": 0.0,
       "7": 0.0,
       "8": 0.0,
-      "9": 0.033
+      "9": 0.049
     }
   },
   {
     "type": "supervisor_edit",
     "workflow": "ks_cancel",
     "at": "D3 11:30",
-    "mttr_minutes": 1530,
+    "mttr_minutes": 390,
     "fixed_by": "controller_approved"
   },
   {
@@ -103,12 +103,12 @@
   "nw_renewal:welcome_message=W3": {
     "2": 0.145,
     "3": 0.152,
-    "4": 0.142,
-    "5": 0.157,
-    "6": 0.145,
-    "7": 0.147,
+    "4": 0.153,
+    "5": 0.142,
+    "6": 0.142,
+    "7": 0.15,
     "8": 0.154,
-    "9": 0.151
+    "9": 0.153
   }
 }
 ```

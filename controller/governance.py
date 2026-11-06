@@ -122,12 +122,27 @@ def _next_working(t: int, lo: int, hi: int) -> int:
     return t
 
 
-def window_ok(ctx: Ctx, pol: dict) -> tuple[bool, str]:
+URGENT_MIN_P_IN_TIME = 0.75
+
+
+def p_decided_in_time(ctx: Ctx, pol: dict) -> float:
+    """Share of the approver-latency range (assumed uniform, as documented) for which the decision lands
+    inside approver hours and before the TTL."""
+    lo, hi = pol["lat"]
+    deadline = ctx.now + pol["ttl_h"] * 60 - 15
+    ok = sum(1 for lat in range(lo, hi + 1) if _next_working(ctx.now + lat, pol["lo"], pol["hi"]) <= deadline)
+    return ok / (hi - lo + 1)
+
+
+def window_ok(ctx: Ctx, pol: dict, urgent: bool = False) -> tuple[bool, str]:
+    """Routine requests need the worst-case decision to land before the TTL: an expired request costs an
+    approver-fatigue slot and is a rejection. An urgent fix accepts a small expiry risk, because waiting
+    overnight for certainty keeps a known-harmful config live for ~18 more hours."""
     if not pol["lo"] <= ctx.hour < pol["hi"]:
         return False, f"approver hours {pol['lo']}:00-{pol['hi']}:00"
-    worst = _next_working(ctx.now + pol["lat"][1], pol["lo"], pol["hi"])
-    if worst > ctx.now + pol["ttl_h"] * 60 - 15:
-        return False, "approver could not decide before the TTL"
+    p = p_decided_in_time(ctx, pol)
+    if p < (URGENT_MIN_P_IN_TIME if urgent else 1.0):
+        return False, f"approver could not decide before the TTL (P(in time)={p:.2f})"
     return True, ""
 
 
@@ -288,7 +303,7 @@ def plan(ctx: Ctx, wf: str, T: dict, parts: list[Part], persist) -> None:
     urgent = any(p.urgent for p in rparts)
     if open_rows and (pending_urgent or not urgent):
         return
-    ok, why = window_ok(ctx, pol)
+    ok, why = window_ok(ctx, pol, urgent)
     if not ok:
         _note_wait(ctx, wf, gst, f"waiting: {why}", rest, urgent)
         return

@@ -11,7 +11,7 @@
 
 ## Changes applied by the controller
 
-18 applied — neutral: 9, beneficial: 9
+17 applied — neutral: 9, beneficial: 8
 
 - ks_cancel v2 (controller_auto) dims=['caller_id'] engageΔ=+0.000 didΔ=+0.018 → **neutral**
 - nw_renewal v2 (controller_auto) dims=['caller_id'] engageΔ=+0.000 didΔ=+0.018 → **neutral**
@@ -24,9 +24,8 @@
 - nw_renewal v5 (controller_approved) dims=['voice'] engageΔ=+0.000 didΔ=+0.000 → **neutral**
 - ks_cancel v6 (controller_approved) dims=['voice'] engageΔ=+0.057 didΔ=+0.000 → **beneficial**
 - nw_renewal v6 (controller_auto) dims=['caller_id'] engageΔ=+0.000 didΔ=+0.043 → **beneficial**
-- nw_kyc v3 (controller_approved) dims=['caller_id'] engageΔ=+0.000 didΔ=+0.133 → **beneficial**
+- nw_kyc v3 (controller_approved) dims=['caller_id'] engageΔ=+0.000 didΔ=+0.300 → **beneficial**
 - nw_renewal v7 (controller_approved) dims=['welcome_message'] engageΔ=+0.015 didΔ=+0.000 → **beneficial**
-- nw_kyc v4 (controller_approved) dims=['caller_id'] engageΔ=+0.000 didΔ=+0.163 → **beneficial**
 - ks_cancel v7 (controller_auto) dims=['welcome_message'] engageΔ=+0.007 didΔ=+0.000 → **neutral**
 - ks_cancel v8 (controller_auto) dims=['welcome_message'] engageΔ=+0.004 didΔ=+0.000 → **neutral**
 - nw_renewal v8 (controller_approved) dims=['voice'] engageΔ=-0.001 didΔ=+0.000 → **neutral**
@@ -42,7 +41,7 @@
     "expired": 0
   },
   "rejection_reasons": {},
-  "applied_via_approval": 10,
+  "applied_via_approval": 9,
   "auto_applied": 8,
   "auto_apply_rejected": 0,
   "apply_conflicts": 0,

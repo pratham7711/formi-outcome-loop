@@ -1,6 +1,6 @@
 # Outcome-First Agent Loop — Submission
 
-**Name:** Pratham Sharma · **Date:** 2026-11-06 · **Hours actually spent (be honest):** HOURS_TBD (built with
+**Name:** Pratham Sharma · **Date:** 2026-11-06 · **Hours actually spent (be honest):** ~1.5 hours elapsed on 2026-11-06 (19:15–20:35 IST). An AI agent (Claude Code) wrote and ran most of it while I directed and reviewed (built with
 Claude Code as a pair; every decision below is mine to defend) · **Language / storage:** Python 3 (httpx, numpy
 for the calibration script only) / one SQLite file in WAL mode
 

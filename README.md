@@ -1,3 +1,8 @@
+> **Solution (Pratham Sharma):** `./run.sh <SIM_URL>` starts the controller. Read
+> [`SUBMISSION.md`](SUBMISSION.md) for the design and results, [`docs/RUNBOOK.md`](docs/RUNBOOK.md) to operate it,
+> and `reports/` for graded runs, load numbers, calibration and crash-recovery evidence. The assignment brief
+> follows unchanged.
+
 # Outcome-First Agent Loop — Senior Engineer Assignment
 
 **Formi · Agentic Universe** · Greenfield · Suggested effort 12–16 hours across 7 calendar days

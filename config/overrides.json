@@ -1,0 +1,7 @@
+{
+  "tenants": {
+    "kestrel_finance": {"max_requests_per_24h": 2, "earliest_hour": 11,
+                        "_why": "Anita Desai (Kestrel ops): max two requests a day, none before 11:00. Stricter than the platform policy, so we honour it."}
+  },
+  "workflows": {}
+}

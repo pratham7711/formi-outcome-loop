@@ -24,7 +24,7 @@ import sys
 import time
 from pathlib import Path
 
-from . import callerid, experiments, governance, incidents, schedule
+from . import callerid, configutil, experiments, governance, incidents, schedule
 from .api import Api
 from .cohorts import PREFIX
 from .common import MIN_PER_DAY, Ctx
@@ -146,6 +146,8 @@ class Controller:
         for wf in self.wfs:
             c = self.api.must(self.api.get(f"/workflows/{wf}/config"), "config")
             self.configs[wf] = {"version": c["version"], "config": c["config"], "actor": c["actor"]}
+            self.store.db.execute("INSERT OR IGNORE INTO config_snapshots VALUES(?,?,?,?)",
+                                  (wf, c["version"], c["actor"], dumps(c["config"])))
 
     def handle_pending_events(self, ctx: Ctx):
         for ev in self.state.pop("pending_events", []):
@@ -168,17 +170,21 @@ class Controller:
         return self.configs[wf]["config"]["prompt_version"]
 
     def harmful_veto(self, wf: str):
-        def check(cfg: dict) -> str | None:
+        def check(cfg: dict, live: dict) -> str | None:
+            """Withhold only if the approved config sends MORE traffic to a measured-harmful arm than the
+            live config does. An arm a supervisor chose and the request merely carries along is the
+            supervisor's call, and blocking on it would also block every unrelated fix."""
             st = self.state.get("mod", {}).get("experiments", {}).get(wf, {})
+            new_c, live_c = configutil.normalise(cfg), configutil.normalise(live)
             for dim, s in st.items():
-                if not isinstance(s, dict):
+                if not isinstance(s, dict) or dim not in configutil.AGENT_DIMS:
                     continue
-                bad = set(s.get("dropped", {})) | set(s.get("decayed", {}))
-                for k, alloc in cfg["allocations"].items():
-                    d = alloc.get(dim) or {}
-                    hit = [o for o in bad if d.get(o, 0) > 0.0]
+                bad = sorted(set(s.get("dropped", {})) | set(s.get("decayed", {})))
+                for k in sorted(new_c["allocations"]):
+                    d, was = configutil.dist(new_c, k, dim), configutil.dist(live_c, k, dim)
+                    hit = [o for o in bad if d.get(o, 0) > was.get(o, 0) + 1e-6]
                     if hit:
-                        return f"it still routes {k} traffic to {dim} {hit}, measured harmful since it was requested"
+                        return f"it would raise {k} traffic to {dim} {hit} above the live config, and those were measured harmful after it was requested"
             return None
         return check
 

@@ -4,14 +4,14 @@
 
 | workflow | conclusion rate | Δ | pickup | Δ | engagement | Δ | engagement gap captured | hallucinated calls (base) |
 |---|---|---|---|---|---|---|---|---|
-| ks_cancel | 0.367 | +55.7% | 0.252 | +39.0% | 0.496 | +6.2% | 32% | 94 (348) |
-| nw_kyc | 0.440 | +17.9% | 0.278 | +18.4% | 0.598 | -1.7% | 0% | 27 (29) |
-| nw_renewal | 0.483 | +11.5% | 0.294 | +12.3% | 0.546 | -1.5% | 5% | 60 (54) |
-| ALL | 0.421 | +27.3% | 0.272 | +23.7% | 0.535 | +0.5% | 20% | 181 (431) |
+| ks_cancel | 0.361 | +53.5% | 0.250 | +37.9% | 0.494 | +5.7% | 32% | 108 (348) |
+| nw_kyc | 0.434 | +16.0% | 0.276 | +17.6% | 0.593 | -2.5% | 0% | 32 (29) |
+| nw_renewal | 0.489 | +13.0% | 0.293 | +11.7% | 0.556 | +0.2% | 8% | 59 (54) |
+| ALL | 0.419 | +26.8% | 0.270 | +22.9% | 0.537 | +0.8% | 21% | 199 (431) |
 
 ## Changes applied by the controller
 
-22 applied — neutral: 9, beneficial: 12, harmful: 1
+24 applied — neutral: 10, beneficial: 13, harmful: 1
 
 - ks_cancel v2 (controller_auto) dims=['caller_id'] engageΔ=+0.000 didΔ=+0.018 → **neutral**
 - nw_renewal v2 (controller_auto) dims=['caller_id'] engageΔ=+0.000 didΔ=+0.018 → **neutral**
@@ -32,7 +32,9 @@
 - nw_kyc v4 (controller_approved) dims=['caller_id'] engageΔ=+0.000 didΔ=+0.000 → **neutral**
 - ks_cancel v11 (controller_auto) dims=['welcome_message', 'voice'] engageΔ=-0.007 didΔ=+0.000 → **neutral**
 - ks_cancel v12 (controller_auto) dims=['welcome_message', 'voice'] engageΔ=-0.004 didΔ=+0.000 → **neutral**
-- nw_kyc v5 (controller_approved) dims=['caller_id'] engageΔ=+0.000 didΔ=+0.140 → **beneficial**
+- nw_renewal v9 (controller_approved) dims=['welcome_message'] engageΔ=+0.015 didΔ=+0.000 → **beneficial**
+- nw_kyc v5 (controller_approved) dims=['caller_id'] engageΔ=+0.000 didΔ=+0.082 → **beneficial**
+- nw_renewal v10 (controller_approved) dims=['voice'] engageΔ=-0.007 didΔ=+0.000 → **neutral**
 - ks_cancel v13 (controller_auto) dims=['caller_id'] engageΔ=+0.000 didΔ=-0.060 → **harmful**
 - ks_cancel v14 (controller_auto) dims=['caller_id'] engageΔ=+0.000 didΔ=+0.063 → **beneficial**
 
@@ -40,16 +42,16 @@
 
 ```
 {
-  "approval_requests": 21,
+  "approval_requests": 15,
   "decisions": {
-    "approved": 18,
+    "approved": 13,
     "rejected": 1,
     "expired": 0
   },
   "rejection_reasons": {
     "approver declined (judgement call)": 1
   },
-  "applied_via_approval": 9,
+  "applied_via_approval": 11,
   "auto_applied": 13,
   "auto_apply_rejected": 0,
   "apply_conflicts": 0,
@@ -57,7 +59,7 @@
   "peak_requests_per_24h": {
     "nw_renewal": 2,
     "ks_cancel": 1,
-    "nw_kyc": 1
+    "nw_kyc": 2
   }
 }
 ```
@@ -78,7 +80,7 @@
       "6": 0.0,
       "7": 0.0,
       "8": 0.0,
-      "9": 0.049
+      "9": 0.033
     }
   },
   {
@@ -105,10 +107,10 @@
     "3": 0.152,
     "4": 0.153,
     "5": 0.142,
-    "6": 0.142,
-    "7": 0.15,
-    "8": 0.154,
-    "9": 0.153
+    "6": 0.027,
+    "7": 0.0,
+    "8": 0.0,
+    "9": 0.0
   }
 }
 ```

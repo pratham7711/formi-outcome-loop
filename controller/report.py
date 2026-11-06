@@ -104,16 +104,22 @@ def heard(st: Store, wf: str, at: int, feats: dict, out):
     rows = st.rows("SELECT * FROM config_versions WHERE wf=? AND sim_minute<=? ORDER BY version DESC LIMIT 1", wf, at)
     pv = rows[0] if rows else None
     cfgrow = None
-    if pv and pv["proposal_id"]:
-        r = st.rows("SELECT config FROM proposals WHERE proposal_id=?", pv["proposal_id"])
+    if pv:
+        r = st.rows("SELECT config FROM config_snapshots WHERE wf=? AND version=?", wf, pv["version"])
+        if not r and pv["proposal_id"]:
+            r = st.rows("SELECT config FROM proposals WHERE proposal_id=?", pv["proposal_id"])
         cfgrow = json.loads(r[0]["config"]) if r else None
+    else:
+        r = st.rows("SELECT config, version FROM config_snapshots WHERE wf=? ORDER BY version LIMIT 1", wf)
+        if r and r[0]["version"] == 1:
+            cfgrow, pv = json.loads(r[0]["config"]), {"version": 1, "actor": "business default", "sim_minute": 0}
     print(f"## What could a {feats} customer of {wf} hear at {fm(at)}?\n", file=out)
     if not pv:
         print("Business default config (no change by anyone yet).", file=out)
         return
     if cfgrow is None:
         print(f"Config v{pv['version']} was set by **{pv['actor']}** at {fm(pv['sim_minute'])}; its contents are in the "
-              f"platform config history (we store our own proposals' configs, not supervisors').", file=out)
+              f"platform config history: it was replaced inside one loop step, so the controller never saw its contents.", file=out)
         return
     cohort = next((c["id"] for c in cfgrow["cohorts"] if matches(c["where"], feats)), "default")
     print(f"Config **v{pv['version']}** (actor {pv['actor']}, live since {fm(pv['sim_minute'])}); this customer falls in "

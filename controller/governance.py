@@ -401,7 +401,7 @@ def _auto_result(ctx: Ctx, wf: str, pid: str, r, A: dict):
 
 # ------------------------------------------------------------------------------- lifecycle
 def track(ctx: Ctx, wf: str, known_harmful, persist):
-    """Polls open approval requests; applies approved ones. known_harmful(cfg)->str|None vetoes a stale idea."""
+    """Polls open approval requests; applies approved ones. known_harmful(cfg, live)->str|None vetoes a stale idea."""
     for row in ctx.store.rows("SELECT * FROM proposals WHERE wf=? AND path='approval' AND status IN "
                               "('pending','approved','applying') ORDER BY created_minute", wf):
         pid, aid = row["proposal_id"], row["approval_id"]
@@ -447,7 +447,7 @@ def track(ctx: Ctx, wf: str, known_harmful, persist):
                                 "status IN ('pending','submitting') AND proposal_id<>?", wf, pid)
         if others and not row["urgent"]:
             continue  # let the urgent one land first; this one may lapse, and we re-propose
-        veto = known_harmful(json.loads(row["config"]))
+        veto = known_harmful(json.loads(row["config"]), ctx.configs[wf]["config"])
         if veto:
             _set(ctx, pid, status="withheld", note=veto)
             ctx.decide(wf, MODULE, "withheld", f"{aid} approved but not applied: {veto}", {}, pid)

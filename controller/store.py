@@ -28,6 +28,8 @@ CREATE TABLE IF NOT EXISTS chunks_seen (chunk INTEGER PRIMARY KEY, kind TEXT, un
 CREATE TABLE IF NOT EXISTS config_versions (wf TEXT, version INTEGER, actor TEXT, changed_dims TEXT,
     proposal_id TEXT, approval_id TEXT, sim_minute INTEGER, ts TEXT, event_id INTEGER,
     PRIMARY KEY (wf, version));
+CREATE TABLE IF NOT EXISTS config_snapshots (wf TEXT, version INTEGER, actor TEXT, config TEXT NOT NULL,
+    PRIMARY KEY (wf, version));
 CREATE TABLE IF NOT EXISTS proposals (proposal_id TEXT PRIMARY KEY, wf TEXT NOT NULL, path TEXT NOT NULL,
     status TEXT NOT NULL, urgent INTEGER NOT NULL DEFAULT 0, base_version INTEGER, dims TEXT,
     change_summary TEXT, rationale TEXT, impact_score REAL, affected_leads INTEGER,

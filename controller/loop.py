@@ -188,7 +188,10 @@ class Controller:
         ctx = self.ctx()
         self.refresh_configs()
         self.handle_pending_events(ctx)
+        decided = self.state.setdefault("decided", {})
         for wf in sorted(self.wfs):
+            if decided.get(wf) == self.now:
+                continue  # already decided this sim minute before a restart; never decide twice
             governance.track(ctx, wf, self.harmful_veto(wf), self.persist)
             cfg = self.configs[wf]["config"]
             sched_live = {}
@@ -205,6 +208,8 @@ class Controller:
             self.credits = ctx.credits
             T = governance.compose(ctx, wf, sched_t, did_t, exp_t, prompt_t)
             governance.plan(ctx, wf, T, p1 + p2 + p3 + p4, self.persist)
+            decided[wf] = self.now
+            self.persist()
         self.persist()
         self.store.commit()
         return time.time() - t0

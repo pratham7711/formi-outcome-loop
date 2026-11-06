@@ -324,19 +324,30 @@ def plan(ctx: Ctx, wf: str, T: dict, parts: list[Part], persist) -> None:
     if not urgent:
         gst["last_routine_request"] = ctx.now
     gst.pop("waiting", None)
+    if urgent:
+        gst.pop("urgent_waiting_since", None)
+        ctx.store.resolve_alert(ctx.now, wf, "urgent_change_waiting")
     persist()
     r = ctx.api.post("/approvals", body)
     _submit_result(ctx, wf, pid, r)
     persist()
 
 
+URGENT_WAIT_TICKET_H = 18
+
+
 def _note_wait(ctx, wf, gst, why, dims, urgent):
+    """Waiting for approver hours is normal (info). An urgent change still unsent after
+    URGENT_WAIT_TICKET_H is not: someone should ring the client's approver."""
     key = f"{why}|{sorted(dims)}"
     if gst.get("waiting") != key:
         gst["waiting"] = key
         ctx.decide(wf, MODULE, "wait", f"Change to {sorted(dims)} ready but {why}", {"urgent": urgent})
-        if urgent:
-            ctx.alert(wf, "ticket", "urgent_change_waiting", f"{wf}: urgent change to {sorted(dims)} is queued: {why}")
+    if urgent:
+        since = gst.setdefault("urgent_waiting_since", ctx.now)
+        if ctx.now - since >= URGENT_WAIT_TICKET_H * 60:
+            ctx.alert(wf, "ticket", "urgent_change_waiting", f"{wf}: urgent change to {sorted(dims)} unsent for "
+                      f"{(ctx.now - since) // 60}h ({why}). Call the client's approver.")
 
 
 def _submit_result(ctx: Ctx, wf: str, pid: str, r):
@@ -446,7 +457,15 @@ def track(ctx: Ctx, wf: str, known_harmful, persist):
 
 
 def reconcile(ctx: Ctx, persist):
-    """Restart path: resolve every intent whose HTTP outcome we did not record."""
+    """Restart path: resolve every intent whose HTTP outcome we did not record.
+
+    A workflow that already sent an HTTP write at the current sim minute is marked as decided for that
+    minute: re-running its plan would compute the *next* step (e.g. another max_shift walk) early, so a
+    crash would change behaviour. With the marker, a crashed run makes exactly the decisions an
+    uninterrupted one would."""
+    decided = ctx.state.setdefault("decided", {})
+    for row in ctx.store.rows("SELECT wf FROM proposals WHERE created_minute=? AND status<>'not_sent'", ctx.now):
+        decided[row["wf"]] = ctx.now
     for row in ctx.store.rows("SELECT * FROM proposals WHERE status IN ('submitting','applying')"):
         wf, pid = row["wf"], row["proposal_id"]
         if row["path"] == "auto":

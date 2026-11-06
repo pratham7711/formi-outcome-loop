@@ -51,25 +51,25 @@ def changed_dims(old: dict, new: dict) -> list[str]:
 
 
 def max_shift(old: dict, new: dict) -> float:
-    keys = {"default"} | {c["id"] for c in old["cohorts"]} | {c["id"] for c in new["cohorts"]}
+    keys = sorted({"default"} | {c["id"] for c in old["cohorts"]} | {c["id"] for c in new["cohorts"]})
     worst = 0.0
     for k in keys:
         for dim in AGENT_DIMS:
             a, b = dist(old, k, dim), dist(new, k, dim)
-            worst = max(worst, 0.5 * sum(abs(a.get(o, 0) - b.get(o, 0)) for o in set(a) | set(b)))
+            worst = max(worst, 0.5 * sum(abs(a.get(o, 0) - b.get(o, 0)) for o in sorted(set(a) | set(b))))
     return worst
 
 
 def interpolate(old: dict, new: dict, alpha: float, dims) -> dict:
     """old + alpha*(new-old) on the agent dims listed (same cohort list assumed)."""
     out = copy.deepcopy(new)
-    keys = {"default"} | {c["id"] for c in new["cohorts"]}
+    keys = ["default"] + [c["id"] for c in new["cohorts"]]
     for k in keys:
         for dim in dims:
             if dim not in AGENT_DIMS:
                 continue
             a, b = dist(old, k, dim), dist(new, k, dim)
-            mix = {o: (1 - alpha) * a.get(o, 0) + alpha * b.get(o, 0) for o in set(a) | set(b)}
+            mix = {o: (1 - alpha) * a.get(o, 0) + alpha * b.get(o, 0) for o in sorted(set(a) | set(b))}
             mix = {o: round(w, 6) for o, w in mix.items() if w > 1e-6}
             if k == "default" or dim in (new["allocations"].get(k) or {}) or dim in (old["allocations"].get(k) or {}):
                 out["allocations"].setdefault(k, {})[dim] = mix

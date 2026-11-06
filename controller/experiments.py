@@ -366,7 +366,7 @@ def _promoted_step(ctx, wf, dim, st, cube: Cube):
         did = ctx.decide(wf, MODULE, "rollback", f"{dim} {win} rolled back to {ctrl}: {why}",
                          {"arm": win, "recent_lift": r.lift, "z": r.z, "n": [r.n_a, r.n_b],
                           "promo_lift": st["promo_lift"]})
-        ctx.alert(wf, "ticket", f"decay:{dim}:{win}", f"{wf}: promoted {dim} {win} stopped winning ({why}); "
+        ctx.alert(wf, "info", f"decay:{dim}:{win}", f"{wf}: promoted {dim} {win} stopped winning ({why}); "
                   f"controller rolled back to {ctrl}. No action needed unless rollback is stuck in approval.")
         parts.append(Part(module=MODULE, kind="rollback", dims={dim},
                           summary=f"Roll back {dim.replace('_', ' ')} {win} -> {ctrl}: it stopped winning",

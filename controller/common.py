@@ -85,7 +85,7 @@ def window_keys(d: dict, now: int, hours: int):
 
 def tv(a: dict, b: dict) -> float:
     sa, sb = sum(a.values()) or 1, sum(b.values()) or 1
-    return 0.5 * sum(abs(a.get(o, 0) / sa - b.get(o, 0) / sb) for o in set(a) | set(b))
+    return 0.5 * sum(abs(a.get(o, 0) / sa - b.get(o, 0) / sb) for o in sorted(set(a) | set(b)))
 
 
 def norm(d: dict) -> dict:

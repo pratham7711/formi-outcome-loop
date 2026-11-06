@@ -11,4 +11,6 @@ PY="${PYTHON:-}"
 if [[ -z "$PY" ]]; then
   if [[ -x .venv/bin/python ]]; then PY=.venv/bin/python; else PY=python3; fi
 fi
+# Pinned so any set iteration we missed cannot make two runs of the same world differ.
+export PYTHONHASHSEED=0
 exec "$PY" -m controller --url "$SIM_URL" --db "${CONTROLLER_DB:-state/controller.db}" --step "${CONTROLLER_STEP:-60}"
